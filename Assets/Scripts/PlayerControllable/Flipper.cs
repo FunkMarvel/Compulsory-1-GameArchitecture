@@ -1,18 +1,43 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-public class Flipper : MonoBehaviour
+namespace PlayerControllable
 {
-    // Start is called before the first frame update
-    void Start()
+    public class Flipper : MonoBehaviour
     {
+        [Header("Movement")] [SerializeField] private KeyCode triggerKey;
+        [SerializeField] private AnimationCurve turningCurve;
+        [SerializeField] private float maxAngle = 90f;
         
-    }
+        [Header("Physics")] [SerializeField] private float impactForceStrength = 1;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        [Header("Scoring")] [SerializeField] private int scorevalue = 1;
+
+        private bool _hasAnimationCurve;
+        private bool _hasTrigger;
+        private float _turnTimer = 2;
+
+        private void Awake()
+        {
+            _hasAnimationCurve = turningCurve != null;
+            _hasTrigger = triggerKey != KeyCode.None;
+        }
+
+
+        private void Update()
+        {
+            if (!_hasTrigger && !_hasAnimationCurve) return;
+
+            if (Input.GetKeyDown(triggerKey))
+            {
+                _turnTimer = 0;
+            }
+
+            var transform1 = transform;
+            transform.localEulerAngles = Vector3.up * (maxAngle * turningCurve.Evaluate(_turnTimer));
+
+            _turnTimer += Time.deltaTime;
+            if (_turnTimer > 2) _turnTimer = 1.1f;
+        }
     }
 }
