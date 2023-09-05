@@ -10,6 +10,7 @@
 // //////////////////////////////////////////////////////////////////////////
 // //////////////////////////////
 
+using System;
 using UnityEngine;
 
 namespace PlayerControllable
@@ -27,11 +28,14 @@ namespace PlayerControllable
         private bool _hasAnimationCurve;
         private bool _hasTrigger;
         private float _turnTimer = 2;
+        private float _prevRotation;
 
         private void Awake()
         {
             _hasAnimationCurve = turningCurve != null;
             _hasTrigger = triggerKey != KeyCode.None;
+
+            _prevRotation = transform.localEulerAngles.y;
         }
 
 
@@ -42,10 +46,24 @@ namespace PlayerControllable
             if (Input.GetKeyDown(triggerKey)) _turnTimer = 0;
 
             var transform1 = transform;
-            transform.localEulerAngles = Vector3.up * (maxAngle * turningCurve.Evaluate(_turnTimer));
+            var rotationAngle = (maxAngle * turningCurve.Evaluate(_turnTimer));
+
+            var parent = transform1.parent;
+            transform1.RotateAround(parent.position, parent.up, rotationAngle-_prevRotation);
+            _prevRotation = rotationAngle;
 
             _turnTimer += Time.deltaTime;
             if (_turnTimer > 2) _turnTimer = 1.1f;
+        }
+
+        private void OnCollisionEnter(Collision other)
+        {
+            if (other.gameObject.CompareTag("Ball"))
+            {
+                var up = transform.forward;
+                var impulseVec = -up * Vector3.Dot( -up, other.relativeVelocity) * 2f;
+                other.rigidbody.AddForce(impulseVec, ForceMode.Impulse);
+            }
         }
     }
 }
