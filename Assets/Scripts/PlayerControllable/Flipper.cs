@@ -60,9 +60,9 @@ namespace PlayerControllable
         {
             if (other.gameObject.CompareTag("Ball"))
             {
-                var up = transform.forward;
-                var impulseVec = -up * Vector3.Dot( -up, other.relativeVelocity) * 2f;
-                other.rigidbody.AddForce(impulseVec, ForceMode.Impulse);
+                var up = transform.up;
+                var impulseVec = -up * Vector3.Dot( up, other.rigidbody.velocity) * impactForceStrength;
+                // other.gameObject.AddForce(impulseVec, ForceMode.Impulse);
             }
         }
     }
