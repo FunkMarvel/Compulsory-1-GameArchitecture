@@ -1,4 +1,15 @@
-using System;
+// //////////////////////////////////////////////////////////////////////////
+// //////////////////////////////
+// //FileName: Flipper.cs
+// //FileType: Visual C# Source file
+// //Author : Anders P. Åsbø
+// //Created On : 05/09/2023
+// //Last Modified On : 05/09/2023
+// //Copy Rights : Anders P. Åsbø
+// //Description :
+// //////////////////////////////////////////////////////////////////////////
+// //////////////////////////////
+
 using UnityEngine;
 
 namespace PlayerControllable
@@ -8,7 +19,7 @@ namespace PlayerControllable
         [Header("Movement")] [SerializeField] private KeyCode triggerKey;
         [SerializeField] private AnimationCurve turningCurve;
         [SerializeField] private float maxAngle = 90f;
-        
+
         [Header("Physics")] [SerializeField] private float impactForceStrength = 1;
 
         [Header("Scoring")] [SerializeField] private int scorevalue = 1;
@@ -28,10 +39,7 @@ namespace PlayerControllable
         {
             if (!_hasTrigger && !_hasAnimationCurve) return;
 
-            if (Input.GetKeyDown(triggerKey))
-            {
-                _turnTimer = 0;
-            }
+            if (Input.GetKeyDown(triggerKey)) _turnTimer = 0;
 
             var transform1 = transform;
             transform.localEulerAngles = Vector3.up * (maxAngle * turningCurve.Evaluate(_turnTimer));
