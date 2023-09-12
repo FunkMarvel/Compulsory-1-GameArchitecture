@@ -12,6 +12,7 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PlayerControllable
 {
@@ -21,7 +22,7 @@ namespace PlayerControllable
         [SerializeField] private AnimationCurve turningCurve;
         [SerializeField] private float maxAngle = 90f;
 
-        [Header("Physics")] [SerializeField] private float impactForceStrength = 1;
+        [Header("Physics")] [SerializeField] private float impactImpulseStrength = 1;
 
         [Header("Scoring")] [SerializeField] private int scorevalue = 1;
 
@@ -49,7 +50,7 @@ namespace PlayerControllable
             var rotationAngle = (maxAngle * turningCurve.Evaluate(_turnTimer));
 
             var parent = transform1.parent;
-            transform1.RotateAround(parent.position, parent.up, rotationAngle-_prevRotation);
+            transform1.RotateAround(parent.position, parent.forward, rotationAngle-_prevRotation);
             _prevRotation = rotationAngle;
 
             _turnTimer += Time.deltaTime;
@@ -58,12 +59,13 @@ namespace PlayerControllable
 
         private void OnCollisionEnter(Collision other)
         {
-            if (other.gameObject.CompareTag("Ball"))
-            {
-                var up = transform.up;
-                var impulseVec = -up * Vector3.Dot( up, other.rigidbody.velocity) * impactForceStrength;
-                // other.gameObject.AddForce(impulseVec, ForceMode.Impulse);
-            }
+            if (!other.gameObject.CompareTag("Ball")) return;
+            
+            var rigidBall = other.gameObject.GetComponent<Ball.Ball>();
+            var up = -Vector3.ProjectOnPlane(other.contacts[0].normal, Vector3.forward).normalized;
+            var impulseVec = -up * impactImpulseStrength * Vector3.Dot(up, rigidBall.PreviousVelocity);
+            Debug.Log($"Direction {up}\n Impulse {impulseVec}");
+            rigidBall.RigidBody.AddForce(impulseVec, ForceMode.Impulse);
         }
     }
 }

@@ -1,18 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
+// //////////////////////////////////////////////////////////////////////////
+// //////////////////////////////
+// //FileName: Ball.cs
+// //FileType: Visual C# Source file
+// //Author : Anders P. Åsbø
+// //Created On : 05/09/2023
+// //Last Modified On : 12/09/2023
+// //Copy Rights : Anders P. Åsbø
+// //Description :
+// //////////////////////////////////////////////////////////////////////////
+// //////////////////////////////
+
 using UnityEngine;
 
-public class Ball : MonoBehaviour
+namespace Ball
 {
-    // Start is called before the first frame update
-    void Start()
+    public class Ball : MonoBehaviour
     {
-        
-    }
+        public Rigidbody RigidBody { get; private set; }
+        public Vector3 PreviousVelocity { get; private set; }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        private void Awake()
+        {
+            RigidBody = gameObject.GetComponent<Rigidbody>();
+        }
+
+        private void Start()
+        {
+            PreviousVelocity = RigidBody.velocity;
+        }
+
+        private void LateUpdate()
+        {
+            PreviousVelocity = RigidBody.velocity;
+        }
     }
 }
