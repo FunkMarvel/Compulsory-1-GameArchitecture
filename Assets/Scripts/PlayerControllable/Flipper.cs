@@ -13,6 +13,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UIElements;
 
 namespace PlayerControllable
 {
@@ -21,6 +22,7 @@ namespace PlayerControllable
         [Header("Movement")] [SerializeField] private KeyCode triggerKey;
         [SerializeField] private AnimationCurve turningCurve;
         [SerializeField] private float maxAngle = 90f;
+        [SerializeField] [Range(0f,1f)] private float holdTime = 0.4f;
 
         [Header("Physics")] [SerializeField] private float impactImpulseStrength = 1;
 
@@ -28,32 +30,57 @@ namespace PlayerControllable
 
         private bool _hasAnimationCurve;
         private bool _hasTrigger;
+        private bool _hasRigidBody;
         private float _turnTimer = 2;
         private float _prevRotation;
+
+        private Rigidbody _rigidbody;
 
         private void Awake()
         {
             _hasAnimationCurve = turningCurve != null;
             _hasTrigger = triggerKey != KeyCode.None;
 
-            _prevRotation = transform.localEulerAngles.y;
-        }
+            _prevRotation = transform.rotation.eulerAngles.y;
 
+            _rigidbody = GetComponent<Rigidbody>();
+            _hasRigidBody = _rigidbody != null;
+        }
 
         private void Update()
         {
-            if (!_hasTrigger && !_hasAnimationCurve) return;
+            if (_hasTrigger && Input.GetKeyDown(triggerKey)) ResetTimer();
+            if (_hasTrigger && Input.GetKey(triggerKey) && _turnTimer >= holdTime) _turnTimer = holdTime;
+        }
 
-            if (Input.GetKeyDown(triggerKey)) _turnTimer = 0;
+        private void ResetTimer()
+        {
+            _turnTimer = 0;
+        }
+
+        private void FixedUpdate()
+        {
+            if (!_hasTrigger && !_hasAnimationCurve) return;
 
             var transform1 = transform;
             var rotationAngle = (maxAngle * turningCurve.Evaluate(_turnTimer));
 
             var parent = transform1.parent;
-            transform1.RotateAround(parent.position, parent.forward, rotationAngle-_prevRotation);
+            // transform1.RotateAround(parent.position, parent.forward, rotationAngle-_prevRotation);
+
+            if (_hasRigidBody)
+            {
+                var rot = Quaternion.AngleAxis(rotationAngle-_prevRotation, parent.forward);
+
+                _rigidbody.MovePosition(rot * (_rigidbody.position - parent.position) + parent.position);
+                _rigidbody.MoveRotation(_rigidbody.rotation * rot);
+            }
+            
+            // _rigidbody.AddTorque(transform1.parent.forward, ForceMode.Acceleration);
+            
             _prevRotation = rotationAngle;
 
-            _turnTimer += Time.deltaTime;
+            _turnTimer += Time.fixedDeltaTime;
             if (_turnTimer > 2) _turnTimer = 1.1f;
         }
 
@@ -62,10 +89,13 @@ namespace PlayerControllable
             if (!other.gameObject.CompareTag("Ball")) return;
             
             var rigidBall = other.gameObject.GetComponent<Ball.Ball>();
-            var up = -Vector3.ProjectOnPlane(other.contacts[0].normal, Vector3.forward).normalized;
-            var impulseVec = -up * impactImpulseStrength * Vector3.Dot(up, rigidBall.PreviousVelocity);
-            Debug.Log($"Direction {up}\n Impulse {impulseVec}");
-            rigidBall.RigidBody.AddForce(impulseVec, ForceMode.Impulse);
+            var up = transform.up;
+            
+            var impulse = Mathf.Abs(Vector3.Dot(up, rigidBall.RigidBody.velocity.normalized));
+            var impulseVec = up * impactImpulseStrength * (impulse > 0.5f ? impulse : 0f);
+            Vector3.ClampMagnitude(impulseVec, impactImpulseStrength);
+
+            rigidBall.RigidBody.AddForce(impulseVec, ForceMode.VelocityChange);
         }
     }
 }
