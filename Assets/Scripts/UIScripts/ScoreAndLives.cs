@@ -4,18 +4,16 @@
 // //FileType: Visual C# Source file
 // //Author : Anders P. Åsbø
 // //Created On : 28/09/2023
-// //Last Modified On : 28/09/2023
+// //Last Modified On : 29/09/2023
 // //Copy Rights : Anders P. Åsbø
 // //Description :
 // //////////////////////////////////////////////////////////////////////////
 // //////////////////////////////
 
-using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace UIScripts
 {
@@ -32,10 +30,10 @@ namespace UIScripts
         [SerializeField] private string mainMenuScene;
 
         private Ball.Ball _ball;
-        private SpawnSystem.SpawnSystem _spawner;
+        private bool _gameOver;
         private bool _hasBall;
         private bool _hasSpawner;
-        private bool _gameOver;
+        private SpawnSystem.SpawnSystem _spawner;
 
         private void Awake()
         {
@@ -44,7 +42,7 @@ namespace UIScripts
             if (_hasBall)
             {
                 _ball = ballObject.GetComponent<Ball.Ball>();
-                _hasBall = _ball != null; 
+                _hasBall = _ball != null;
             }
 
             _hasSpawner = spawner != null;
@@ -66,8 +64,15 @@ namespace UIScripts
             controlsPromptText.text = "Controls:\n'A' and 'D'";
             StartCoroutine(ExecuteAfterTime(5));
         }
-        
-        IEnumerator ExecuteAfterTime(float time)
+
+        private void LateUpdate()
+        {
+            if (_gameOver) return;
+            scoreText.text = $"Score: {_ball.Score}";
+            livesText.text = $"Lives: {_ball.Lives}";
+        }
+
+        private IEnumerator ExecuteAfterTime(float time)
         {
             yield return new WaitForSeconds(time);
 
@@ -79,10 +84,10 @@ namespace UIScripts
             Debug.Log("Callbacked");
             gameOverText.text = $"Game Over\nFinal score: {_ball.Score}";
             scoreText.text = livesText.text = "";
-            
+
             restartButton.SetActive(true);
             exitButton.SetActive(true);
-            
+
             _gameOver = true;
         }
 
@@ -94,13 +99,6 @@ namespace UIScripts
         public void OnRestart()
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
-
-        private void LateUpdate()
-        {
-            if (_gameOver) return;
-            scoreText.text = $"Score: {_ball.Score}";
-            livesText.text = $"Lives: {_ball.Lives}";
         }
     }
 }
