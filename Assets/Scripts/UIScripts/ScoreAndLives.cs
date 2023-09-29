@@ -10,6 +10,8 @@
 // //////////////////////////////////////////////////////////////////////////
 // //////////////////////////////
 
+using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -22,17 +24,18 @@ namespace UIScripts
         [SerializeField] private TMP_Text scoreText;
         [SerializeField] private TMP_Text livesText;
         [SerializeField] private TMP_Text gameOverText;
+        [SerializeField] private TMP_Text controlsPromptText;
         [SerializeField] private GameObject restartButton;
         [SerializeField] private GameObject exitButton;
         [SerializeField] private GameObject ballObject;
         [SerializeField] private GameObject spawner;
+        [SerializeField] private string mainMenuScene;
 
         private Ball.Ball _ball;
         private SpawnSystem.SpawnSystem _spawner;
         private bool _hasBall;
         private bool _hasSpawner;
         private bool _gameOver;
-        [SerializeField] private string mainMenuScene;
 
         private void Awake()
         {
@@ -56,6 +59,19 @@ namespace UIScripts
             gameOverText.text = "";
             restartButton.SetActive(false);
             exitButton.SetActive(false);
+        }
+
+        private void Start()
+        {
+            controlsPromptText.text = "Controls:\n'A' and 'D'";
+            StartCoroutine(ExecuteAfterTime(5));
+        }
+        
+        IEnumerator ExecuteAfterTime(float time)
+        {
+            yield return new WaitForSeconds(time);
+
+            controlsPromptText.text = "";
         }
 
         public void OnGameOver()
