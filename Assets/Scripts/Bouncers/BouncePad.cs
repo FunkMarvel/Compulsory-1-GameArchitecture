@@ -6,7 +6,7 @@
 // //Created On : 28/09/2023
 // //Last Modified On : 29/09/2023
 // //Copy Rights : Anders P. Åsbø
-// //Description :
+// //Description : Class for pad that bounces object normal to a flat surface.
 // //////////////////////////////////////////////////////////////////////////
 // //////////////////////////////
 
