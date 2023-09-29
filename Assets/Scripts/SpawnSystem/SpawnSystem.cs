@@ -44,6 +44,8 @@ namespace SpawnSystem
             if (ball.Lives > 0)
             {
                 other.gameObject.transform.SetPositionAndRotation(SpawnPoint.position, Quaternion.identity);
+                var rigid = other.gameObject.GetComponent<Rigidbody>();
+                rigid.velocity = Vector3.zero;
             }
             else
             {
