@@ -6,7 +6,7 @@
 // //Created On : 28/09/2023
 // //Last Modified On : 28/09/2023
 // //Copy Rights : Anders P. Åsbø
-// //Description :
+// //Description : Class that bounces ball normal to a cylindrical surface.
 // //////////////////////////////////////////////////////////////////////////
 // //////////////////////////////
 
