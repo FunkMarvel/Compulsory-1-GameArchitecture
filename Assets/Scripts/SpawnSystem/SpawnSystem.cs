@@ -6,7 +6,7 @@
 // //Created On : 28/09/2023
 // //Last Modified On : 29/09/2023
 // //Copy Rights : Anders P. Åsbø
-// //Description :
+// //Description : Script handling point counting and moving ball to respawn point.
 // //////////////////////////////////////////////////////////////////////////
 // //////////////////////////////
 

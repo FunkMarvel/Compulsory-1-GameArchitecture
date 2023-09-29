@@ -6,7 +6,7 @@
 // //Created On : 28/09/2023
 // //Last Modified On : 29/09/2023
 // //Copy Rights : Anders P. Åsbø
-// //Description :
+// //Description : Script for handling in-game ui and game over screen.
 // //////////////////////////////////////////////////////////////////////////
 // //////////////////////////////
 
